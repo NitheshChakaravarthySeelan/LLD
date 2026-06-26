@@ -21,9 +21,7 @@ The State Pattern is the heart of this system. A Vending Machine is a classic fi
 ### 2. Single Responsibility Principle (SRP)
 Every class has one, and only one, reason to change:
 - `Inventory`: Strictly manages the stock (adding, removing, checking availability).
-- `Vault`: Manages the permanent physical cash inside the machine.
-- `Transaction`: Manages the *current* user's session (their cart/bag and currently inserted money).
-- `VendingMachine`: Acts as the central orchestrator (Context) but delegates actual work to the state and transaction modules.
+- `VendingMachine`: Acts as the central orchestrator (Context) and holds the temporary/permanent money balances. It delegates actual work to the state modules.
 
 ## 📂 Recommended Project Structure
 
@@ -43,9 +41,8 @@ VendingMachine/
 │   ├── HasMoneyState.java   
 │   └── DispenseState.java   
 │
-├── transactions/            # TRANSACTION & MONEY MANAGEMENT
-│   ├── Transaction.java     # Current session money and selected items
-│   └── Vault.java           # Permanent machine cash storage
+│
+├── Main.java                # Driver class with test scenarios
 │
 └── enums/                   # CONSTANTS
     ├── Note.java            # Denominations of money (10, 20, 50, 100)
@@ -55,12 +52,25 @@ VendingMachine/
 ## 🧠 How to Read This Codebase
 If you are learning from this repository, we recommend reading the files in this order:
 1. **The Entities**: Start with `Product.java`, `Slot.java`, and `Note.java`. Understand the basic building blocks.
-2. **The Storage**: Read `Inventory.java` and `Vault.java`. See how the machine holds physical items and money.
+2. **The Storage**: Read `Inventory.java`. See how the machine holds physical items.
 3. **The State Interface**: Look at `state/State.java`. Understand the "verbs" (what can a user do?).
-4. **The Orchestrator**: Read `VendingMachine.java`. See how it holds references to `Inventory`, `Vault`, and the `currentState`.
+4. **The Orchestrator**: Read `VendingMachine.java`. See how it holds references to `Inventory`, the balances, and the `currentState`.
 5. **The Implementations**: Finally, read `IdleState.java` and others to see how the state handles user input and transitions the machine.
 
 ## 🚀 Future Improvements
 - Add `Coin` support alongside `Note`.
 - Implement an admin interface to refill the inventory.
 - Implement Card payment strategies (Strategy Pattern).
+
+## 🛠️ How to Compile and Run
+This project uses pure Java with no external dependencies. To run the `Main.java` test scenarios:
+
+**1. Compile the code into a `target` folder:**
+```bash
+javac -d target $(find . -name "*.java")
+```
+
+**2. Run the application:**
+```bash
+java -cp target VendingMachine.Main
+```

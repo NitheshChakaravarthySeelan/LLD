@@ -7,6 +7,4 @@ package VendingMachine;
 public class Inventory {
     private String inventoryId;
     private Slot[] slots;
-
-    
 }
