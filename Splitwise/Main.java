@@ -12,21 +12,21 @@ import Splitwise.service.SplitwiseService;
 
 public class Main {
     public static void main(String[] args) {
-        SplitwiseService splitwiseService = new SplitwiseService();
+        SplitwiseService splitwiseService = SplitwiseService.getInstance();
 
-        // 1. Create Users
-        User u1 = new User("Alice", "alice@example.com");
-        User u2 = new User("Bob", "bob@example.com");
-        User u3 = new User("Charlie", "charlie@example.com");
+        // 1. Create Users via Service Factory
+        User u1 = splitwiseService.addUser("Alice", "alice@example.com");
+        User u2 = splitwiseService.addUser("Bob", "bob@example.com");
+        User u3 = splitwiseService.addUser("Charlie", "charlie@example.com");
 
         System.out.println("Users Created: " + u1.getUserName() + ", " + u2.getUserName() + ", " + u3.getUserName());
 
-        // 2. Create Group
+        // 2. Create Group via Service Factory
         List<User> members = new ArrayList<>();
         members.add(u1);
         members.add(u2);
         members.add(u3);
-        Group group = new Group(u1, members, new ArrayList<>());
+        Group group = splitwiseService.addGroup(u1, members);
 
         System.out.println("\n--- Adding Equal Expense ---");
         // Alice pays 300, split equally among Alice, Bob, Charlie (100 each)
@@ -54,13 +54,7 @@ public class Main {
         splitwiseService.printBalances();
 
         System.out.println("\n--- Settling up ---");
-        // Let's say Bob settles his debt with Alice. We can do a settleUp operation.
-        // Or just show how settleUp works. 
-        // Right now balances between Bob and Alice:
-        // Alice paid 300 -> Bob owes Alice 100
-        // Bob paid 200 (exact: Alice=50) -> Alice owes Bob 50
-        // Net: Bob owes Alice 50.
-        // Let's settle Bob paying 50 to Alice.
+        // Bob settled 50 with Alice
         splitwiseService.settleUp(u2, u1, 50.0);
         System.out.println("Bob settled 50 with Alice.");
         splitwiseService.printBalances();
