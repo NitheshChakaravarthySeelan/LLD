@@ -5,12 +5,12 @@ import java.util.UUID;
 public class Split {
     private final String id;
     private final User user;
-    private final int amount;
+    private final double amount;
 
-    public Split(User user, int amount) {
+    public Split(User user, double each) {
         this.id = UUID.randomUUID().toString();
         this.user = user; 
-        this.amount = amount;
+        this.amount = each;
     }
 
     public String getId() {
@@ -21,7 +21,7 @@ public class Split {
         return this.user;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return this.amount;
     }
 }

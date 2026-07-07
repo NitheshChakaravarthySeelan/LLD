@@ -7,12 +7,14 @@ public class Group {
     private final String id;
     private final User createdBy;
     private final List<User> users;
+    private final List<Expences> expences;
 
 
-    public Group(User createdBy, List<User> members) {
+    public Group(User createdBy, List<User> members, List<Expences> expences) {
         this.id = UUID.randomUUID().toString();
         this.createdBy = createdBy;
         this.users = members;
+        this.expences = expences;
     }
 
     public String getId() {
@@ -27,4 +29,19 @@ public class Group {
         return this.createdBy;
     }
 
+    public List<Expences> getExpences() {
+        return this.expences;
+    }
+
+    public void addMembers(User newUser) {
+        this.users.add(newUser);
+    }
+
+    public void removeMember(User user) {
+        this.users.remove(user);
+    }
+
+    public void addExpence(Expences expences) {
+        this.expences.add(expences);
+    }
 }

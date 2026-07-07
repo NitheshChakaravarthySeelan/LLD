@@ -7,5 +7,5 @@ import Splitwise.model.Split;
 import Splitwise.model.User;
 
 public interface SplitStrategy {
-    List<Split> calculateSplit(Map<User, Double> splitData, int amount);
+    List<Split> calculateSplit(Map<User, Double> splitData, int amount, List<User> users);
 }
