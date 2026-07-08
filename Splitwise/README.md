@@ -14,8 +14,9 @@ Design and implement a simplified version of Splitwise. The application should b
    - **EQUAL:** The expense is divided equally among all participants.
    - **EXACT:** Each participant owes a specific exact amount.
    - **PERCENTAGE:** Each participant owes a specific percentage of the total amount.
-5. **Balance Sheet:** The system must maintain an ongoing balance sheet tracking exactly how much each user owes every other user.
-6. **Settle Up:** Users should be able to settle their balances (pay back what they owe).
+5. **Balance Sheet:** The system must maintain an ongoing global balance sheet tracking exactly how much each user owes every other user.
+6. **Simplify Debts:** The system should be able to minimize the number of transactions needed to settle all debts within a specific group, executing an on-the-fly greedy algorithm to generate simplified transactions.
+7. **Settle Up:** Users should be able to settle their balances (pay back what they owe).
 
 ## Architecture and Design Patterns
 
@@ -39,7 +40,8 @@ The `SplitwiseService` acts as a facade. It provides simplified, high-level meth
 *   **`Group`**: Represents a collection of users sharing expenses.
 *   **`Expences`**: Represents a single transaction paid by one user and shared by multiple.
 *   **`Split`**: Represents a user and the exact amount they owe for a particular expense.
-*   **`BalanceSheet`**: Central ledger storing a Map of `User -> (User -> Amount)`. Tracks who owes whom. If the balance is positive, the target user owes the owner user.
+*   **`BalanceSheet`**: Central ledger storing a Map of `User -> (User -> Amount)`. Tracks raw debts globally.
+*   **`Transaction`**: Represents a simplified cash transfer (`debtor`, `creditor`, `amount`) generated dynamically by the `Simplify Debts` algorithm.
 
 ## Directory Structure
 ```
@@ -79,8 +81,9 @@ javac -d . $(find . -name "*.java") && java Splitwise.Main
 2. **Equal Expense:** Alice pays $300, split equally. Bob and Charlie each owe Alice $100.
 3. **Exact Expense:** Bob pays $200. Exact split: Alice=$50, Bob=$50, Charlie=$100.
 4. **Percentage Expense:** Charlie pays $100. Percentage split: Alice=20%, Bob=30%, Charlie=50%.
-5. **Print Balances:** Displays the net balances across all users.
-6. **Settle Up:** Bob settles $50 with Alice, adjusting the global ledger automatically.
+5. **Print Balances:** Displays the raw global net balances across all users.
+6. **Simplify Debts:** Call `simplifyGroupDebts(groupId)` to dynamically extract group expenses and generate the minimum number of transactions needed to settle the group using a greedy matching algorithm.
+7. **Settle Up:** Users can settle balances with each other, adjusting the global ledger automatically.
 
 ---
 *This is a standard Low Level Design practice implementation useful for grasping OOPs concepts, Design Patterns, and clean coding principles for tech interviews.*
