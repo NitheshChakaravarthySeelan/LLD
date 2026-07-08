@@ -9,7 +9,6 @@ public class Group {
     private final List<User> users;
     private final List<Expences> expences;
 
-
     public Group(User createdBy, List<User> members, List<Expences> expences) {
         this.id = UUID.randomUUID().toString();
         this.createdBy = createdBy;

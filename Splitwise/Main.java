@@ -8,6 +8,7 @@ import java.util.Map;
 import Splitwise.enums.StrategyType;
 import Splitwise.model.Group;
 import Splitwise.model.User;
+import Splitwise.model.Transaction;
 import Splitwise.service.SplitwiseService;
 
 public class Main {
@@ -21,42 +22,52 @@ public class Main {
 
         System.out.println("Users Created: " + u1.getUserName() + ", " + u2.getUserName() + ", " + u3.getUserName());
 
-        // 2. Create Group via Service Factory
-        List<User> members = new ArrayList<>();
-        members.add(u1);
-        members.add(u2);
-        members.add(u3);
-        Group group = splitwiseService.addGroup(u1, members);
+        // 2. Create Groups
+        List<User> members1 = new ArrayList<>();
+        members1.add(u1);
+        members1.add(u2);
+        members1.add(u3);
+        Group group1 = splitwiseService.addGroup(u1, members1);
 
-        System.out.println("\n--- Adding Equal Expense ---");
-        // Alice pays 300, split equally among Alice, Bob, Charlie (100 each)
-        // Alice paid 300, so Bob owes Alice 100, Charlie owes Alice 100
-        splitwiseService.addExpense(group, u1, 300, members, StrategyType.EQUAL, new HashMap<>());
+        List<User> members2 = new ArrayList<>();
+        members2.add(u2);
+        members2.add(u3);
+        Group group2 = splitwiseService.addGroup(u2, members2);
+
+        System.out.println("\n--- Adding Expenses to Group 1 ---");
+        // Alice pays 30 for Alice, Bob, Charlie (10 each). 
+        // Bob owes Alice 10, Charlie owes Alice 10
+        splitwiseService.addExpense(group1, u1, 30, members1, StrategyType.EQUAL, new HashMap<>());
+        
+        // A pays 100 for B. (B owes A 100)
+        Map<User, Double> exactData1 = new HashMap<>();
+        exactData1.put(u2, 100.0);
+        splitwiseService.addExpense(group1, u1, 100, List.of(u2), StrategyType.EXACT, exactData1);
+
+        // B pays 100 for C. (C owes B 100)
+        Map<User, Double> exactData2 = new HashMap<>();
+        exactData2.put(u3, 100.0);
+        splitwiseService.addExpense(group1, u2, 100, List.of(u3), StrategyType.EXACT, exactData2);
+        
+        System.out.println("\n--- Adding Expenses to Group 2 ---");
+        // In Group 2, C pays 100 for B (B owes C 100)
+        Map<User, Double> exactData3 = new HashMap<>();
+        exactData3.put(u2, 100.0);
+        splitwiseService.addExpense(group2, u3, 100, List.of(u2), StrategyType.EXACT, exactData3);
+
+        System.out.println("\n[Before Simplify] Printing Global Balances:");
         splitwiseService.printBalances();
 
-        System.out.println("\n--- Adding Exact Expense ---");
-        // Bob pays 200, Exact split: Alice=50, Bob=50, Charlie=100
-        Map<User, Double> exactSplitData = new HashMap<>();
-        exactSplitData.put(u1, 50.0);
-        exactSplitData.put(u2, 50.0);
-        exactSplitData.put(u3, 100.0);
-        splitwiseService.addExpense(group, u2, 200, members, StrategyType.EXACT, exactSplitData);
-        splitwiseService.printBalances();
-
-        System.out.println("\n--- Adding Percentage Expense ---");
-        // Charlie pays 100, Percentage split: Alice=20%, Bob=30%, Charlie=50%
-        // So Alice=20, Bob=30, Charlie=50
-        Map<User, Double> percentSplitData = new HashMap<>();
-        percentSplitData.put(u1, 20.0);
-        percentSplitData.put(u2, 30.0);
-        percentSplitData.put(u3, 50.0);
-        splitwiseService.addExpense(group, u3, 100, members, StrategyType.PERCENTAGE, percentSplitData);
-        splitwiseService.printBalances();
-
-        System.out.println("\n--- Settling up ---");
-        // Bob settled 50 with Alice
-        splitwiseService.settleUp(u2, u1, 50.0);
-        System.out.println("Bob settled 50 with Alice.");
-        splitwiseService.printBalances();
+        System.out.println("\n--- SIMPLIFYING DEBTS ON-THE-FLY FOR GROUP 1 ---");
+        List<Transaction> group1Transactions = splitwiseService.simplifyGroupDebts(group1.getId());
+        for(Transaction t : group1Transactions) {
+            System.out.println(t.toString());
+        }
+        
+        System.out.println("\n--- SIMPLIFYING DEBTS ON-THE-FLY FOR GROUP 2 ---");
+        List<Transaction> group2Transactions = splitwiseService.simplifyGroupDebts(group2.getId());
+        for(Transaction t : group2Transactions) {
+            System.out.println(t.toString());
+        }
     }
 }
