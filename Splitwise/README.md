@@ -43,6 +43,8 @@ The `SplitwiseService` acts as a facade. It provides simplified, high-level meth
 *   **`BalanceSheet`**: Central ledger storing a Map of `User -> (User -> Amount)`. Tracks raw debts globally.
 *   **`Transaction`**: Represents a simplified cash transfer (`debtor`, `creditor`, `amount`) generated dynamically by the `Simplify Debts` algorithm.
 
+*   I think we need to actually use the balance sheet in the group. 
+
 ## Directory Structure
 ```
 Splitwise/
